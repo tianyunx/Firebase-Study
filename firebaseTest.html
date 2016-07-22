@@ -20,8 +20,21 @@
 </script> 
 <script>
     
-  var hello=firebase.database().ref('Hello')
-  console.log(hello.key)
+  var fruit=firebase.database().ref('data')
+  //var databaseRef = firebase.database().ref('data')
+  //console.log(databaseRef.child('apple').val())
+  fruit.on("value", function(snapshot) {
+    console.log(snapshot.val())
+
+  var apple = snapshot.child("apple").val(); 
+  
+  var banana = snapshot.child("banana").val(); 
+  
+  var orange = snapshot.child("orange").val(); 
+  
+  console.log([apple, banana, orange])
+
+})
     
 </script>
     
