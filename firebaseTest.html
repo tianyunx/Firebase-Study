@@ -24,7 +24,7 @@
   //var databaseRef = firebase.database().ref('data')
   //console.log(databaseRef.child('apple').val())
   fruit.on("value", function(snapshot) {
-    console.log(snapshot.val())
+    //console.log(snapshot.val())
 
   var apple = snapshot.child("apple").val(); 
   
@@ -32,10 +32,26 @@
   
   var orange = snapshot.child("orange").val(); 
   
-  console.log([apple, banana, orange])
+  //console.log([apple, banana, orange])
 
 })
-    
+
+// not working yet
+  var pokemon = firebase.database().ref('Pokemon')
+  pokemon.limitToLast(10).on('child_added', function(snapshot){
+    console.log(snapshot.val())
+  })
+
+  var Pikachu = {
+    name: 'Pikachu',
+    type: 'electric',
+    color: 'yellow'
+  }
+
+  var newKey = firebase.database().ref('Pokemon').push().key 
+  var updates = {}
+  updates[newKey+''] = Pikachu
+  firebase.database().ref('Pokemon').updates(updates)   
 </script>
     
 </body>
