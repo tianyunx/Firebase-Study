@@ -6,7 +6,12 @@
 </head>
 
 <body>
-	
+<div>
+  <h4>Newly Added</h4>
+  <ul id='list'>
+  </ul>
+</div>	
+
 <script src="https://www.gstatic.com/firebasejs/3.2.0/firebase.js"></script>
 <script>
   // Initialize Firebase
@@ -35,23 +40,79 @@
   //console.log([apple, banana, orange])
 
 })
-
-// not working yet
-  var pokemon = firebase.database().ref('Pokemon')
-  pokemon.limitToLast(10).on('child_added', function(snapshot){
-    console.log(snapshot.val())
-  })
-
-  var Pikachu = {
+  
+  var Pikachu ={
     name: 'Pikachu',
-    type: 'electric',
+    type: 'Electric',
     color: 'yellow'
+  } 
+
+  // create Pokemon database in firebase
+  createCategory('Pokemon', Pikachu)
+
+
+  var Horsea = {
+    name: 'Horsea',
+    type: 'Water',
+    color: 'blue'
   }
 
-  var newKey = firebase.database().ref('Pokemon').push().key 
-  var updates = {}
-  updates[newKey+''] = Pikachu
-  firebase.database().ref('Pokemon').updates(updates)   
+  var Bulbasaur = {
+    name: 'Bulbasaur',
+    type: 'Grass-Poison',
+    color: 'green'
+  }
+
+  var Charmander = {
+    name: 'Charmander',
+    type: 'Fire',
+    color: 'red'
+  }
+
+  addPokemon(Horsea) 
+  addPokemon(Bulbasaur)
+  addPokemon(Charmander)
+
+  // print elements that's added
+  var pokemon = firebase.database().ref('Pokemon')
+  pokemon.on('child_added', function(snapshot){
+  var ul = document.getElementById('list')
+  var li = document.createElement('li')
+  li.appendChild(document.createTextNode(snapshot.val().name+', '+ snapshot.val().type))
+  ul.appendChild(li)
+  //console.log(snapshot.val())
+  })
+
+// create Pokemon json in database
+function createCategory(c, initialInfo){
+  var newKey = firebase.database().ref(c+'').push().key  
+  var content = newKey+': '
+  firebase.database().ref(c).set(content)
+  firebase.database().ref(c).child(newKey).set(initialInfo)
+}
+
+
+// add 
+// or could create a key of named:
+//  firebase.database().ref('Pokemon').child('Pikachu').set()
+// info better be a json
+ function addPokemon(info){
+  // create a new key
+  var newKey = firebase.database().ref('Pokemon').push().key
+
+  firebase.database().ref('Pokemon').child(newKey).set(info)
+ } 
+
+//print elements from lastest change to old whenever there is a change
+ function printChange(num) {
+  var pokemon = firebase.database().ref('Pokemon')
+  pokemon.limitToLast(num).on('child_added', function(snapshot){
+      console.log(snapshot.val())
+  })
+ }
+
+
+
 </script>
     
 </body>
