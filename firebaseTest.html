@@ -4,6 +4,7 @@
 	<meta charset = “utf-8“>
 	<title>Firebase</title>
   <style>
+
   form { 
     display: table;  
   }
@@ -17,6 +18,7 @@
   input { 
     display: table-cell; 
   }  
+
 
   #pokedexImg{
       position: fixed;
@@ -46,14 +48,22 @@
       <label for='c'>Color:</label>
       <input type='text' id='color'/> 
     </p><br>   
-      <button type='button' onclick='registerPokemon()'>Submit</button>
+      <button type='button' onclick='registerPokemon()'>Register</button>
   </form>	
 
 </div>
 
+<div class='remove'>
+  <h4>Remove a pokemon from Pokedex</h4>
+  <form>
+        Remove&nbsp;
+        <input type ='text' id = 'removeName' /><br>
+      <button type='button' onclick='removePokemon()'>Submit</button>
+</form>
+
 <div class= 'Pokedex'>
   <h4>Now in Pokedex</h4>
-  <ul id='list'>
+  <ul id='PokemonList'>
   </ul>
   
 </div>
@@ -129,14 +139,23 @@ function Pokemon(){
   // list elements that's added on html
   var pokemon = firebase.database().ref('Pokemon')
   pokemon.on('child_added', function(snapshot){
-  var ul = document.getElementById('list')
-  var li = document.createElement('li')
-  li.appendChild(document.createTextNode(snapshot.val().name+', '+ snapshot.val().type))
+    var ul = document.getElementById('PokemonList')
+    var li = document.createElement('li')
+     var removeButton = document.createElement('button')
+     removeButton.innerHTML = 'remove'
+  
+    li.appendChild(document.createTextNode(snapshot.val().name+', '+ snapshot.val().type+'     '))
   // assign pokemon name as list id
-  li.id = snapshot.val().name 
-  ul.appendChild(li)
-  //console.log(snapshot.val())
+    li.id = snapshot.val().name
+
+     li.appendChild(removeButton)
+     
+    removeButton.setAttribute('onclick', 'removeButton(this.parentNode.id)')
+    
+    ul.appendChild(li)
   })
+
+
 
   // remove pokemon from the list if it's deleted
   pokemon.on('child_removed', function(snapshot){
@@ -147,10 +166,10 @@ function Pokemon(){
 
 // create Pokemon json in database
 function createCategory(c, initialInfo){
-  var newKey = firebase.database().ref(c+'').push().key  
-  var content = newKey+': '
-  firebase.database().ref(c).set(content)
-  firebase.database().ref(c).child(newKey).set(initialInfo)
+  // var newKey = firebase.database().ref(c+'').push().key  
+  // var content = newKey+': '
+  firebase.database().ref(c).set(initialInfo.name)
+  firebase.database().ref(c).child(initialInfo.name).set(initialInfo)
 }
 
 
@@ -160,9 +179,9 @@ function createCategory(c, initialInfo){
 // info better be a json
  function addPokemon(info){
   // create a new key
-  var newKey = firebase.database().ref('Pokemon').push().key
+  // var newKey = firebase.database().ref('Pokemon').push().key
 
-  firebase.database().ref('Pokemon').child(newKey).set(info)
+  firebase.database().ref('Pokemon').child(info.name).set(info)
  } 
 
 // add pokemon to firebase from html
@@ -183,7 +202,7 @@ function registerPokemon(){
 }
 
 // delete pokemon database from firebase
-function removePokemon(){
+function removeAllPokemon(){
   var removed = firebase.database().ref('Pokemon').remove()
   removed.then(function(){
     console.log('remove succeeded')
@@ -192,8 +211,23 @@ function removePokemon(){
   })
 }
 
-removePokemon()
+// delete pokemon by name(key)
+function removePokemon(){
+  var key = document.getElementById('removeName').value
+  key = key.toLowerCase()
+  key = key.charAt(0).toUpperCase() + key.slice(1)
+  console.log(key)
+  var remove = firebase.database().ref('Pokemon').child(key).remove()
+  document.getElementById('removeName').value =null
+}
+removeAllPokemon()
 Pokemon()
+
+
+// pokedex remove button 
+function removeButton(key){
+   var remove = firebase.database().ref('Pokemon').child(key).remove()
+}
 
 </script>
     
