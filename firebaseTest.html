@@ -132,8 +132,16 @@ function Pokemon(){
   var ul = document.getElementById('list')
   var li = document.createElement('li')
   li.appendChild(document.createTextNode(snapshot.val().name+', '+ snapshot.val().type))
+  // assign pokemon name as list id
+  li.id = snapshot.val().name 
   ul.appendChild(li)
   //console.log(snapshot.val())
+  })
+
+  // remove pokemon from the list if it's deleted
+  pokemon.on('child_removed', function(snapshot){
+    var removedPokemon = document.getElementById(snapshot.val().name)
+    removedPokemon.parentNode.removeChild(removedPokemon)
   })
 }
 
