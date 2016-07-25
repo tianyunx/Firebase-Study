@@ -17,6 +17,14 @@
   input { 
     display: table-cell; 
   }  
+
+  #pokedexImg{
+      position: fixed;
+      left: 450px;
+      top: 120px;
+    }
+
+  
   </style>
 
 </head>
@@ -43,10 +51,14 @@
 
 </div>
 
-<div>
-  <h4>Newly Added</h4>
+<div class= 'Pokedex'>
+  <h4>Now in Pokedex</h4>
   <ul id='list'>
   </ul>
+  
+</div>
+<div id = 'pic'>
+    <img id='pokedexImg' src='http://vignette3.wikia.nocookie.net/pokemon/images/6/6f/Pok%C3%A9dex_Pt.png/revision/latest?cb=20110528144645' height = '160' width='220'>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/3.2.0/firebase.js"></script>
@@ -145,6 +157,7 @@ function createCategory(c, initialInfo){
   firebase.database().ref('Pokemon').child(newKey).set(info)
  } 
 
+// add pokemon to firebase from html
 function registerPokemon(){
   var Name = document.getElementById('name').value
   var Type = document.getElementById('type').value
@@ -161,6 +174,17 @@ function registerPokemon(){
 
 }
 
+// delete pokemon database from firebase
+function removePokemon(){
+  var removed = firebase.database().ref('Pokemon').remove()
+  removed.then(function(){
+    console.log('remove succeeded')
+  }).catch(function(){
+    console.log('problem removing')
+  })
+}
+
+removePokemon()
 Pokemon()
 
 </script>
