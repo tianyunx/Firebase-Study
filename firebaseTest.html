@@ -24,23 +24,27 @@
   firebase.initializeApp(config);
 </script> 
 <script>
-    
+
+// example 1, given the name of the key, get value
+function getDatabaseValueByKey() {    
   var fruit=firebase.database().ref('data')
   //var databaseRef = firebase.database().ref('data')
   //console.log(databaseRef.child('apple').val())
   fruit.on("value", function(snapshot) {
     //console.log(snapshot.val())
 
-  var apple = snapshot.child("apple").val(); 
+    var apple = snapshot.child("apple").val(); 
   
-  var banana = snapshot.child("banana").val(); 
+    var banana = snapshot.child("banana").val(); 
   
-  var orange = snapshot.child("orange").val(); 
+    var orange = snapshot.child("orange").val(); 
   
-  //console.log([apple, banana, orange])
+    //console.log([apple, banana, orange])
+  })
+}
 
-})
-  
+// create Pokemon in the firebase
+function Pokemon(){  
   var Pikachu ={
     name: 'Pikachu',
     type: 'Electric',
@@ -73,7 +77,7 @@
   addPokemon(Bulbasaur)
   addPokemon(Charmander)
 
-  // print elements that's added
+  // list elements that's added on html
   var pokemon = firebase.database().ref('Pokemon')
   pokemon.on('child_added', function(snapshot){
   var ul = document.getElementById('list')
@@ -82,6 +86,7 @@
   ul.appendChild(li)
   //console.log(snapshot.val())
   })
+}
 
 // create Pokemon json in database
 function createCategory(c, initialInfo){
@@ -102,15 +107,6 @@ function createCategory(c, initialInfo){
 
   firebase.database().ref('Pokemon').child(newKey).set(info)
  } 
-
-//print elements from lastest change to old whenever there is a change
- function printChange(num) {
-  var pokemon = firebase.database().ref('Pokemon')
-  pokemon.limitToLast(num).on('child_added', function(snapshot){
-      console.log(snapshot.val())
-  })
- }
-
 
 
 </script>
