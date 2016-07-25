@@ -141,17 +141,22 @@ function Pokemon(){
   pokemon.on('child_added', function(snapshot){
     var ul = document.getElementById('PokemonList')
     var li = document.createElement('li')
-     var removeButton = document.createElement('button')
-     removeButton.innerHTML = 'remove'
-  
-    li.appendChild(document.createTextNode(snapshot.val().name+', '+ snapshot.val().type+'     '))
+    var removeButton = document.createElement('button')
+    var editButton = document.createElement('button')
+
+    removeButton.innerHTML = 'remove'
+    editButton.innerHTML = 'edit'
+
+    li.appendChild(document.createTextNode(snapshot.val().name+', '+ snapshot.val().type+', '+snapshot.val().color+'     '))
   // assign pokemon name as list id
     li.id = snapshot.val().name
 
      li.appendChild(removeButton)
-     
+     li.appendChild(editButton)
+
     removeButton.setAttribute('onclick', 'removeButton(this.parentNode.id)')
-    
+    editButton.setAttribute('onclick', 'editButton(this.parentNode.id)')
+
     ul.appendChild(li)
   })
 
@@ -161,6 +166,15 @@ function Pokemon(){
   pokemon.on('child_removed', function(snapshot){
     var removedPokemon = document.getElementById(snapshot.val().name)
     removedPokemon.parentNode.removeChild(removedPokemon)
+  })
+
+  // whenever there's a update in database,
+  // update the Pokedex too.
+  pokemon.on('child_changed', function(snapshot){
+    console.log(snapshot.val())
+    var updatedPokemon = document.getElementById(snapshot.val().name)
+    console.log(updatedPokemon.innerHTML)
+     updatedPokemon.innerHTML = (snapshot.val().name+', '+ snapshot.val().type+', '+snapshot.val().color+'     <button onclick="removeButton(this.parentNode.id)">remove</button><button onclick="editButton(this.parentNode.id)">edit</button>')
   })
 }
 
@@ -220,15 +234,36 @@ function removePokemon(){
   var remove = firebase.database().ref('Pokemon').child(key).remove()
   document.getElementById('removeName').value =null
 }
-removeAllPokemon()
-Pokemon()
 
+function main(){
+  removeAllPokemon()
+  Pokemon()
+}
 
 // pokedex remove button 
 function removeButton(key){
    var remove = firebase.database().ref('Pokemon').child(key).remove()
 }
 
+// function editButton(key){
+//   var editList = document.getElementById(key)
+//   var nameInput = document.createElement('input')
+//   var typeInput = document.createElement('input')
+//   var colorInput = document.createElement('input')
+//   editList.removeChild(editList.childNodes[0])
+//   editList.removeChild(editList.childNodes[1])
+//   editList.removeChild(editList.childNodes[2])
+//   nameInput.setAttribute('type', 'text')
+//   nameInput.setAttribute('value', key+'')
+//   editList.appendChild(nameInput)
+//   typeInput.setAttribute('type', 'text')
+//   typeInput.setAttribute('value', key+'')
+//   colorInput.setAttribute('type', 'text')
+//   colorInput.setAttribute('value', key+'')
+//   console.log(editList.childNodes)
+// }
+
+main()
 </script>
     
 </body>
