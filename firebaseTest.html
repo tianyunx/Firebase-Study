@@ -48,7 +48,7 @@
       <label for='c'>Color:</label>
       <input type='text' id='color'/> 
     </p><br>   
-      <button type='button' onclick='registerPokemon()'>Register</button>
+      <button type='button' onclick='registerPokemon()'>Register/ Update</button>
   </form>	
 
 </div>
@@ -104,6 +104,7 @@ function getDatabaseValueByKey() {
 
 // create Pokemon in the firebase
 function Pokemon(){  
+  // ---------- initialize pokemon database----------
   var Pikachu ={
     name: 'Pikachu',
     type: 'Electric',
@@ -135,6 +136,7 @@ function Pokemon(){
   addPokemon(Horsea) 
   addPokemon(Bulbasaur)
   addPokemon(Charmander)
+  //--------------------------------------------------
 
   // list elements that's added on html
   var pokemon = firebase.database().ref('Pokemon')
@@ -143,19 +145,25 @@ function Pokemon(){
     var li = document.createElement('li')
     var removeButton = document.createElement('button')
     var editButton = document.createElement('button')
+    var pokemonName = snapshot.val().name
+    var pokemonType = snapshot.val().type
+    var pokemonColor = snapshot.val().color
+
 
     removeButton.innerHTML = 'remove'
     editButton.innerHTML = 'edit'
 
-    li.appendChild(document.createTextNode(snapshot.val().name+', '+ snapshot.val().type+', '+snapshot.val().color+'     '))
+    li.appendChild(document.createTextNode(pokemonName+', '+ pokemonType+', '+pokemonColor+'     '))
   // assign pokemon name as list id
-    li.id = snapshot.val().name
+    li.id = pokemonName
+    // title saves pokemon all attributes (data) 
+    li.title= pokemonName+','+pokemonType+','+pokemonColor
 
-     li.appendChild(removeButton)
-     li.appendChild(editButton)
+    li.appendChild(removeButton)
+    li.appendChild(editButton)
 
     removeButton.setAttribute('onclick', 'removeButton(this.parentNode.id)')
-    editButton.setAttribute('onclick', 'editButton(this.parentNode.id)')
+    editButton.setAttribute('onclick', 'editButton(this.parentNode.id, this.parentNode.title)')
 
     ul.appendChild(li)
   })
@@ -171,10 +179,13 @@ function Pokemon(){
   // whenever there's a update in database,
   // update the Pokedex too.
   pokemon.on('child_changed', function(snapshot){
-    console.log(snapshot.val())
+
     var updatedPokemon = document.getElementById(snapshot.val().name)
-    console.log(updatedPokemon.innerHTML)
-     updatedPokemon.innerHTML = (snapshot.val().name+', '+ snapshot.val().type+', '+snapshot.val().color+'     <button onclick="removeButton(this.parentNode.id)">remove</button><button onclick="editButton(this.parentNode.id)">edit</button>')
+
+   // update Pokemon title's information
+    updatedPokemon.title =snapshot.val().name+','+snapshot.val().type+','+snapshot.val().color 
+
+    updatedPokemon.innerHTML = (snapshot.val().name+', '+ snapshot.val().type+', '+snapshot.val().color+'     <button onclick="removeButton(this.parentNode.id)">remove</button><button onclick="editButton(this.parentNode.id,this.parentNode.title)">edit</button>')
   })
 }
 
@@ -191,7 +202,7 @@ function createCategory(c, initialInfo){
 // or could create a key of named:
 //  firebase.database().ref('Pokemon').child('Pikachu').set()
 // info better be a json
- function addPokemon(info){
+function addPokemon(info){
   // create a new key
   // var newKey = firebase.database().ref('Pokemon').push().key
 
@@ -245,23 +256,24 @@ function removeButton(key){
    var remove = firebase.database().ref('Pokemon').child(key).remove()
 }
 
-// function editButton(key){
-//   var editList = document.getElementById(key)
-//   var nameInput = document.createElement('input')
-//   var typeInput = document.createElement('input')
-//   var colorInput = document.createElement('input')
-//   editList.removeChild(editList.childNodes[0])
-//   editList.removeChild(editList.childNodes[1])
-//   editList.removeChild(editList.childNodes[2])
-//   nameInput.setAttribute('type', 'text')
-//   nameInput.setAttribute('value', key+'')
-//   editList.appendChild(nameInput)
-//   typeInput.setAttribute('type', 'text')
-//   typeInput.setAttribute('value', key+'')
-//   colorInput.setAttribute('type', 'text')
-//   colorInput.setAttribute('value', key+'')
-//   console.log(editList.childNodes)
-// }
+// edit button
+function editButton(key, val){
+  var editList = document.getElementById(key)
+  var editPokemon = firebase.database().ref('Pokemon').child(key)
+  var info = val.split(',')
+  var name = info[0]
+  var type = info[1]
+  var color = info[2]
+  var nameInput = document.getElementById('name')
+  var typeInput = document.getElementById('type')
+  var colorInput = document.getElementById('color')
+
+  nameInput.value=name
+  typeInput.value=type
+  colorInput.value = color
+
+
+ }
 
 main()
 </script>
